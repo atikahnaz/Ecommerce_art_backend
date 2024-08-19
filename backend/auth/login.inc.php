@@ -3,6 +3,9 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 
+// start session
+
+
 // get POST data from request
 $rawData = file_get_contents("php://input");
 $data = json_decode($rawData,true);
@@ -12,6 +15,7 @@ $email = $data['email'];
 $pwd = $data['pwd'];
 
 try {
+
     require_once('dbh.inc.php');
 
     $query = "SELECT * FROM users where email = :email AND password = :pwd;";
@@ -21,10 +25,14 @@ try {
     $stmt->execute();
 
     //fetch results
-    $user = $stmt->fetchAll((PDO::FETCH_ASSOC));
+    //using fetchAll cause error cause we only need one user
+    $user = $stmt->fetch((PDO::FETCH_ASSOC));
 
     if ($user) {
-        echo json_encode(['status'=>true, 'message'=>'Login succesfull' , 'user'=>$user]);
+        session_start();
+       $_SESSION['user_id'] = $user['id'];
+
+        echo json_encode(['status'=>true, 'message'=>'Login succesfull' , 'user'=>$user, 'session_id'=>session_id()]);
     } else {
         echo json_encode(['status' =>false, 'message'=> 'Invalid email or password']);
     }
