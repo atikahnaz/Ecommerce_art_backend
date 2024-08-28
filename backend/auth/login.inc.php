@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 
 // start session
 
-
+session_start();
 // get POST data from request
 $rawData = file_get_contents("php://input");
 $data = json_decode($rawData,true);
@@ -29,7 +29,7 @@ try {
     $user = $stmt->fetch((PDO::FETCH_ASSOC));
 
     if ($user) {
-        session_start();
+        
        $_SESSION['user_id'] = $user['id'];
 
         echo json_encode(['status'=>true, 'message'=>'Login succesfull' , 'user'=>$user, 'session_id'=>session_id()]);
